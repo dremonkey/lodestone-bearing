@@ -5,9 +5,6 @@
 /// Calculates the initial [bearing](http://www.movable-type.co.uk/scripts/latlong.html)
 /// between two points.
 
-// Standard lib packages
-use std::f64::consts::{PI};
-
 // Third party packages
 extern crate lodestone_point;
 
@@ -20,23 +17,15 @@ pub extern fn bearing(
   let coord1 = from_point.coordinates();
   let coord2 = to_point.coordinates();
 
-  let lng1 = to_rad(coord1[0]);
-  let lng2 = to_rad(coord2[0]);
-  let lat1 = to_rad(coord1[1]);
-  let lat2 = to_rad(coord2[1]);
+  let lng1 = coord1[0].to_radians();
+  let lng2 = coord2[0].to_radians();
+  let lat1 = coord1[1].to_radians();
+  let lat2 = coord2[1].to_radians();
   let a = (lng2 - lng1).sin() * lat2.cos();
   let b = lat1.cos() * lat2.sin() -
           lat1.sin() * lat2.cos() * (lng2 - lng1).cos();
 
-  to_deg(a.atan2(b))
-}
-
-fn to_rad(degree: f64) -> f64 {
-  degree * PI / 180.0
-}
-
-fn to_deg(radian: f64) -> f64 {
-  radian * 180.0 / PI
+  a.atan2(b).to_degrees()
 }
 
 #[cfg(test)]
@@ -53,7 +42,7 @@ mod tests {
     let ny_point = FeaturePoint::new(ny);
     let brng = bearing(&sf_point, &ny_point);
     
-    assert_eq!(brng, 69.9194454755196);
+    assert_eq!(brng, 69.91944547551958);
   }
 
   #[test]
@@ -65,6 +54,6 @@ mod tests {
     let la_point = FeaturePoint::new(la);
     let brng = bearing(&sf_point, &la_point);
 
-    assert_eq!(brng, 136.6491858805329);
+    assert_eq!(brng, 136.64918588053285);
   }
 }
