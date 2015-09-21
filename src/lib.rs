@@ -5,7 +5,7 @@
 /// Calculates the initial [bearing](http://www.movable-type.co.uk/scripts/latlong.html)
 /// between two points.
 
-// Third party packages
+// Third party crates
 extern crate lodestone_point;
 
 use lodestone_point::FeaturePoint;
@@ -32,6 +32,15 @@ pub extern fn bearing(
 mod tests {
   use lodestone_point::FeaturePoint;
   use super::bearing;
+
+  #[test]
+  fn test_simple() {
+    let pt1 = FeaturePoint::new(vec![0.0, 0.0]);
+    let pt2 = FeaturePoint::new(vec![1.0, 0.0]);
+    let brng = bearing(&pt1, &pt2);
+
+    assert_eq!(brng, 90.0);
+  }
 
   #[test]
   fn test_sf_to_ny() {
