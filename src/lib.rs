@@ -10,6 +10,14 @@ extern crate lodestone_point;
 
 use lodestone_point::FeaturePoint;
 
+/// Convert from -180° ... +180° to 0° ... 360°
+pub extern fn abs_bearing(bearing: f64) -> f64 {
+  let mut bearing = bearing % 360.0;
+  if bearing < 0.0 { bearing = bearing + 360.0 };
+  bearing
+}
+
+/// Calculate bearing between -180.0° ... +180.0°
 pub extern fn bearing(
     from_point: &FeaturePoint,
     to_point: &FeaturePoint) -> f64 {
@@ -31,15 +39,33 @@ pub extern fn bearing(
 #[cfg(test)]
 mod tests {
   use lodestone_point::FeaturePoint;
-  use super::bearing;
+  use super::{abs_bearing, bearing};
+
+  #[test]
+  fn test_abs_bearing() {
+    let x1 = 30.0;
+    let x2 = -30.0;
+    let x3 = 710.0;
+    let x4 = -180.0;
+
+    assert_eq!(abs_bearing(x1), 30.0);
+    assert_eq!(abs_bearing(x2), 330.0);
+    assert_eq!(abs_bearing(x3), 350.0);
+    assert_eq!(abs_bearing(x4), 180.0);
+  }
 
   #[test]
   fn test_simple() {
     let pt1 = FeaturePoint::new(vec![0.0, 0.0]);
     let pt2 = FeaturePoint::new(vec![1.0, 0.0]);
-    let brng = bearing(&pt1, &pt2);
+    let pt3 = FeaturePoint::new(vec![0.0, 1.0]);
+    let pt4 = FeaturePoint::new(vec![1.0, 1.0]);
 
-    assert_eq!(brng, 90.0);
+    assert_eq!(bearing(&pt1, &pt2), 90.0);
+    assert_eq!(bearing(&pt1, &pt3), 0.0);
+    assert_eq!(bearing(&pt3, &pt1), 180.0);
+    assert_eq!(bearing(&pt2, &pt1), -90.0);
+    assert_eq!(bearing(&pt1, &pt4) - 44.9956 < 1e-4, true); 
   }
 
   #[test]
